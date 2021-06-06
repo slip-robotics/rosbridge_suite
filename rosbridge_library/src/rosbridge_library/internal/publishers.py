@@ -162,7 +162,8 @@ class MultiPublisher():
         self.latched_client_id = latched_client_id
         self.topic = topic
         self.msg_class = msg_class
-        self.publisher = Publisher(topic, msg_class, latch=(latched_client_id!=None), queue_size=queue_size)
+        self.publisher = Publisher(topic, msg_class, latch=(
+            latched_client_id != None), queue_size=queue_size)
         self.listener = PublisherConsistencyListener()
         self.listener.attach(self.publisher)
 
@@ -276,16 +277,18 @@ class PublisherManager():
         latched_client_id = client_id if latch else None
         if not topic in self._publishers:
             self._publishers[topic] = MultiPublisher(topic, msg_type, latched_client_id,
-             queue_size=queue_size)
+                                                     queue_size=queue_size)
         elif latch and self._publishers[topic].latched_client_id != client_id:
             logwarn("Client ID %s attempted to register topic [%s] as latched " +
                     "but this topic was previously registered.", client_id, topic)
-            logwarn("Only a single registered latched publisher is supported at the time")
+            logwarn(
+                "Only a single registered latched publisher is supported at the time")
         elif not latch and self._publishers[topic].latched_client_id:
             logwarn("New non-latched publisher registration for topic [%s] which is " +
                     "already registered as latched. but this topic was previously " +
                     "registered.", topic)
-            logwarn("Only a single registered latched publisher is supported at the time")
+            logwarn(
+                "Only a single registered latched publisher is supported at the time")
 
         if msg_type is not None:
             self._publishers[topic].verify_type(msg_type)
@@ -317,9 +320,9 @@ class PublisherManager():
         self.unregister_timers[topic].start()
 
     def _unregister_impl(self, topic):
-        if not self._publishers[topic].has_clients():
-            self._publishers[topic].unregister()
-            del self._publishers[topic]
+        # if not self._publishers[topic].has_clients():
+        #     self._publishers[topic].unregister()
+        #     del self._publishers[topic]
         del self.unregister_timers[topic]
 
     def unregister_all(self, client_id):
